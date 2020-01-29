@@ -6,6 +6,7 @@ from PIL import Image
 from io import BytesIO
 import cv2
 from fpdf import FPDF
+import os
 
 class UrlManga():
     def __init__(self,name):
@@ -34,6 +35,7 @@ class UrlManga():
        
     
     def DownloadCap(self,cap):
+        '''
         self.__FindCap(cap)
         page = requests.get(self.__listofcaps) #MODULAR ISSO 
         soup = BeautifulSoup(page.text, 'html.parser')  
@@ -47,8 +49,21 @@ class UrlManga():
                 i+=1
             except Exception as x:
                 print("Error Download ",x)
-        
+        '''
         pdf = FPDF()
+        # imagelist is the list with all image filenames
+        pdf.add_page()
+        imagelist = os.listdir('/home/gabriel/Documentos/GIT/manga-api')
+        print(imagelist)
+        i = 0
+        for image in imagelist:
+            try:
+                if image != '__main__.py':
+                    pdf.image('/home/gabriel/Documentos/GIT/manga-api/img{}.png'.format(i),w=180)
+                    i += 1
+            except Exception as x:
+                print("Error Download ",x)
+        pdf.output("yourfile.pdf", "F")
         
                 
             
