@@ -1,10 +1,7 @@
-# mangayabu
-from lxml import html
 import requests
 from bs4 import BeautifulSoup
 from PIL import Image
 from io import BytesIO
-import cv2
 from fpdf import FPDF
 import os
 
@@ -32,24 +29,26 @@ class UrlManga():
         page = requests.get(self.__manga_url) #MODULAR ISSO 
         soup = BeautifulSoup(page.text, 'html.parser')  
         self.__listofcaps = (soup.find_all('a',{'class':'chapter-link'}))[-cap]['href']
-       
     
     def DownloadCap(self,cap):
-        '''
+        
         self.__FindCap(cap)
         page = requests.get(self.__listofcaps) #MODULAR ISSO 
         soup = BeautifulSoup(page.text, 'html.parser')  
         images = (soup.find_all('img'))
         i = 0
+        size = 800, 900
         for image in images:
             try:
                 response = requests.get(image['src'])
                 img = Image.open(BytesIO(response.content))
+                img.thumbnail(size)
+                img = img.convert('LA')
                 img.save('/home/gabriel/Documentos/GIT/manga-api/img{}.png'.format(i))
                 i+=1
             except Exception as x:
                 print("Error Download ",x)
-        '''
+                
         pdf = FPDF()
         # imagelist is the list with all image filenames
         pdf.add_page()
@@ -59,15 +58,13 @@ class UrlManga():
         for image in imagelist:
             try:
                 if image != '__main__.py':
-                    pdf.image('/home/gabriel/Documentos/GIT/manga-api/img{}.png'.format(i),w=180)
+                    img = Image.open('/home/gabriel/Documentos/GIT/manga-api/img{}.png'.format(i))
+                    pdf.image('/home/gabriel/Documentos/GIT/manga-api/img{}.png'.format(i),w=187)
                     i += 1
             except Exception as x:
                 print("Error Download ",x)
         pdf.output("yourfile.pdf", "F")
         
-                
-            
-                
     
     '''
     FUTURA MODULAÇÃO
@@ -81,5 +78,5 @@ class UrlManga():
         
         
 if __name__ == "__main__":
-    t = UrlManga('claymore')
-    t.DownloadCap(75)
+    t = UrlManga('Kingdom')
+    t.DownloadCap(1)
