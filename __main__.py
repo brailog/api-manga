@@ -11,13 +11,23 @@ class UrlManga():
         :param name: Nome do anime a ser buscado
         Método construtor.
         '''
+        base = 4 # Base para index HTML
+        i = 1
         search_url = 'https://mangayabu.com/?s='
         self.__name = name.replace(" ","+")
         url = search_url + self.__name
         page = requests.get(url) #MODULAR ISSO 
         soup = BeautifulSoup(page.text, 'html.parser') 
         #titles = soup.find_all('h4',{'class':'video-title'})
-        self.__manga_url = soup.find_all('a', href=True)[8]['href'] 
+        titles = soup.find_all('h4',{'class':'video-title'})
+        if len(titles) > 1:
+            for x in titles:
+                print(i,' - ',x.text)
+                i += 1
+            choose = int(input('\nChoose a mangá: '))
+            self.__manga_url = soup.find_all('a', href=True)[base+(choose*4)]['href']
+        else:
+            self.__manga_url = soup.find_all('a', href=True)[base+base]['href'] # MELHORAR
     
     def GetAll(self):
         raise NotImplementedError
